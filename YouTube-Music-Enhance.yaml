@@ -1,12 +1,20 @@
-name: YouTube Music Enhance - Native UI Stable v2.3
-description: 原生媒体信息版；放行播放响应，仅处理页面广告与后台播放设置
-author: Egern adaptation / Maasea upstream transformer
+name: YouTube Music Enhance - Native UI Stable v2.4
+description: 字节级修复；恢复去广告与后台播放，保留登录、灵动岛、锁屏歌曲信息及原生界面
+author: Egern adaptation / Maasea protocol fields
 icon: music.note
 
 scriptings:
-  # player/get_watch 完全直连，保留灵动岛与锁屏媒体元数据。
   - http_response:
-      name: YTM 页面去广告与后台播放设置
+      name: YTM 播放去广告与后台播放
+      match: '^https:\/\/youtubei(?:-att)?\.googleapis\.com\/youtubei\/v1\/(?:player|get_watch)(?:\?.*)?$'
+      script_url: 'https://raw.githubusercontent.com/Mianmianchen/ytm-enhance-egern/main/scripts/ytm-response-v2.4.js'
+      body_required: true
+      binary_body: true
+      max_size: 8388608
+      timeout: 30
+
+  - http_response:
+      name: YTM 页面广告与后台播放设置
       match: '^https:\/\/youtubei(?:-att)?\.googleapis\.com\/youtubei\/v1\/(?:browse|next|account\/get_setting)(?:\?.*)?$'
       script_url: 'https://raw.githubusercontent.com/Mianmianchen/ytm-enhance-egern/main/scripts/ytm-response-v2.2.js'
       body_required: true
