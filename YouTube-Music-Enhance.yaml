@@ -1,29 +1,30 @@
-name: YouTube Music Enhance - Native UI Stable v2.4
-description: 字节级修复；恢复去广告与后台播放，保留登录、灵动岛、锁屏歌曲信息及原生界面
-author: Egern adaptation / Maasea protocol fields
-icon: music.note
-
+name: YouTube Music Enhance v2.5 - Candidate
+description: 播放响应与密钥同步重写；initplayback 依赖 Maasea Worker，手机效果待验证
 scriptings:
   - http_response:
-      name: YTM 播放去广告与后台播放
-      match: '^https:\/\/youtubei(?:-att)?\.googleapis\.com\/youtubei\/v1\/(?:player|get_watch)(?:\?.*)?$'
-      script_url: 'https://raw.githubusercontent.com/Mianmianchen/ytm-enhance-egern/main/scripts/ytm-response-v2.4.js'
+      name: YTM 播放响应与密钥同步 v2.5
+      match: '^https://youtubei(?:-att)?\.googleapis\.com/youtubei/v1/(?:player|get_watch|config|log_event)(?:\?.*)?$'
+      script_url: 'https://raw.githubusercontent.com/Mianmianchen/ytm-enhance-egern/main/scripts/ytm-response-v2.5.mjs'
       body_required: true
       binary_body: true
       max_size: 8388608
-      timeout: 30
-
-  - http_response:
-      name: YTM 页面广告与后台播放设置
-      match: '^https:\/\/youtubei(?:-att)?\.googleapis\.com\/youtubei\/v1\/(?:browse|next|account\/get_setting)(?:\?.*)?$'
-      script_url: 'https://raw.githubusercontent.com/Mianmianchen/ytm-enhance-egern/main/scripts/ytm-response-v2.2.js'
+      timeout: 20
+  - http_request:
+      name: YTM 请求密钥更新 v2.5
+      match: '^https://youtubei(?:-att)?\.googleapis\.com/youtubei/v1/log_event(?:\?.*)?$'
+      script_url: 'https://raw.githubusercontent.com/Mianmianchen/ytm-enhance-egern/main/scripts/ytm-response-v2.5.mjs'
+      timeout: 10
+  - http_request:
+      name: YTM 加密播放处理 v2.5
+      match: '^https://[A-Za-z0-9-]+\.googlevideo\.com/initplayback\?(?:[^#]*&)?ack(?:=|&|$)'
+      script_url: 'https://raw.githubusercontent.com/Mianmianchen/ytm-enhance-egern/main/scripts/ytm-response-v2.5.mjs'
       body_required: true
       binary_body: true
       max_size: 8388608
-      timeout: 30
-
+      timeout: 20
 mitm:
   hostnames:
     includes:
       - youtubei.googleapis.com
       - youtubei-att.googleapis.com
+      - '*.googlevideo.com'
