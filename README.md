@@ -1,4 +1,4 @@
-# YouTube Music Enhance - Native UI Stable v2.2
+# YouTube Music Enhance - Native UI Stable v2.3
 
 适用于 Egern。功能范围固定为：去除播放广告、启用后台播放。不会改写首页、搜索、歌词、评论、歌单、账号设置、画中画或锁屏媒体信息。
 
@@ -11,6 +11,12 @@
 5. 强制结束 YouTube Music，再重新打开。原账号通常会直接恢复；若 App 此前已清掉会话，再登录一次。
 
 YAML 使用完整的 GitHub Raw 地址加载 `scripts/ytm-response-v2.2.js`，无需单独导入 JS。
+
+## v2.3 修复
+
+- `player` 与 `get_watch` 完全直连，不再反序列化、重写播放响应。
+- 保留歌曲标题、歌手、封面等 iOS 系统媒体元数据，修复灵动岛显示为通用音频控件。
+- 继续处理 `browse`、`next` 页面广告与 `account/get_setting` 后台播放设置。
 
 ## v2.2 修复
 
