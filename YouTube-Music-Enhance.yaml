@@ -1,36 +1,14 @@
-name: YouTube Music Enhance - Native UI Stable v2.1
-description: 仅去除播放广告并启用后台播放；保留登录状态、原生歌词、评论、搜索、歌单、画中画及锁屏媒体信息
+name: YouTube Music Enhance - Native UI Stable v2.2
+description: 稳定播放版；去除页面及播放响应广告并启用后台播放，保留登录和原生界面
 author: Egern adaptation / Maasea upstream transformer
 icon: music.note
 
 scriptings:
-  # 本机修改 player/get_watch 响应，不再把账号请求 307 转发到第三方域名。
-  # config/log_event 只提取新版 initplayback 所需密钥，响应内容保持原样。
+  # 仅修改 YouTube 自身响应；不接管 googlevideo 媒体初始化请求。
   - http_response:
       name: YTM 播放响应净化
-      match: '^https:\/\/youtubei(?:-att)?\.googleapis\.com\/youtubei\/v1\/(?:player|get_watch|config|log_event)(?:\?.*)?$'
-      script_url: 'https://raw.githubusercontent.com/Mianmianchen/ytm-enhance-egern/main/scripts/ytm-response.js?v=2.1'
-      body_required: true
-      binary_body: true
-      max_size: 8388608
-      timeout: 30
-
-  # 让 log_event 返回当前 Onesie 配置；请求正文会原样保留。
-  - http_request:
-      name: YTM 播放密钥同步
-      match: '^https:\/\/youtubei(?:-att)?\.googleapis\.com\/youtubei\/v1\/log_event(?:\?.*)?$'
-      script_url: 'https://raw.githubusercontent.com/Mianmianchen/ytm-enhance-egern/main/scripts/ytm-request.js?v=2.1'
-      body_required: true
-      binary_body: true
-      max_size: 8388608
-      timeout: 30
-
-  # 仅在本机缓存密钥与本次请求密钥一致时处理新版 initplayback；
-  # URL 由脚本逐项编码，避免旧版规则把 &ack 等参数截断。
-  - http_request:
-      name: YTM initplayback 去广告
-      match: '^https?:\/\/[A-Za-z0-9._-]+\.googlevideo\.com\/initplayback.+&ack.*$'
-      script_url: 'https://raw.githubusercontent.com/Mianmianchen/ytm-enhance-egern/main/scripts/ytm-request.js?v=2.1'
+      match: '^https:\/\/youtubei(?:-att)?\.googleapis\.com\/youtubei\/v1\/(?:browse|next|player|get_watch|account\/get_setting)(?:\?.*)?$'
+      script_url: 'https://raw.githubusercontent.com/Mianmianchen/ytm-enhance-egern/main/scripts/ytm-response-v2.2.js'
       body_required: true
       binary_body: true
       max_size: 8388608
@@ -41,4 +19,3 @@ mitm:
     includes:
       - youtubei.googleapis.com
       - youtubei-att.googleapis.com
-      - '*.googlevideo.com'

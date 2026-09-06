@@ -1,4 +1,4 @@
-# YouTube Music Enhance - Native UI Stable v2.1
+# YouTube Music Enhance - Native UI Stable v2.2
 
 适用于 Egern。功能范围固定为：去除播放广告、启用后台播放。不会改写首页、搜索、歌词、评论、歌单、账号设置、画中画或锁屏媒体信息。
 
@@ -10,33 +10,34 @@
 4. 确认 Egern 的 MITM CA 已安装并信任，然后重启 Egern 隧道。
 5. 强制结束 YouTube Music，再重新打开。原账号通常会直接恢复；若 App 此前已清掉会话，再登录一次。
 
-YAML 使用完整的 GitHub Raw 地址加载 `scripts/ytm-response.js` 和 `scripts/ytm-request.js`，无需分别导入 JS。
+YAML 使用完整的 GitHub Raw 地址加载 `scripts/ytm-response-v2.2.js`，无需单独导入 JS。
 
-## 本版修复
+## v2.2 修复
+
+- 撤下会造成新版 YouTube Music 卡住的 `initplayback/Onesie` 请求改写。
+- 移除 `*.googlevideo.com` MITM 和第三方 Worker 依赖。
+- 仅处理 YouTube 自身的页面、播放和后台播放设置响应。
+- 使用新脚本文件名绕过 Egern 的旧脚本缓存。
+
+## 早期修复
 
 - 删除 `player/get_watch -> stream.maasea.workers.dev` 的跨域 307，账号鉴权留在 Google 原域名。
 - 同时支持 `youtubei.googleapis.com` 与新版 `youtubei-att.googleapis.com`。
 - 使用 Egern 原生 `ctx` 脚本接口处理二进制 Protobuf。
-- `initplayback` 只有在缓存密钥校验通过时才处理，并对目标 URL 完整编码。
 - 不再强制注入画中画能力，避免黑屏、只有声音或小窗转圈。
-- 不拦截 `browse`、`next`、`search`、`guide`、`account/get_setting`，减少歌词、评论、搜索和歌单异常。
 - 修改响应正文时清理旧的 `Content-Length` 与 `Content-Encoding`，避免正文长度不一致。
 - 远程脚本改用绝对 Raw 地址，避免 Egern 将相对路径识别成本地文件。
-- `initplayback` 仅匹配带 `ack` 的请求；密钥缺失或过期时透传原请求，不再返回可能导致无限转圈的空响应。
 
 ## 已验证
 
 - 2026-09-06 使用 YouTube Music iOS 9.35 客户端参数取得实时 `player` Protobuf 响应，并完成本机转换。
 - `youtubei.googleapis.com`、`youtubei-att.googleapis.com` 两条接口均通过。
 - 未压缩与 gzip 响应均通过；转换结果一致。
-- `log_event` 的账号头与正文保持不变，只移除已失效的压缩/热配置头。
-- `initplayback` 的完整目标 URL 可无损编码、还原；缺少密钥时会干净回退到普通 `player`。
-- 登录、搜索、歌词、评论、歌单及账号设置接口均不会命中任何改写规则。
+- 登录、搜索、歌词与评论接口保持 Google 原链路。
 
 ## 文件
 
 - `YouTube-Music-Enhance.yaml`：Egern 模块。
-- `scripts/ytm-response.js`：播放响应去广告与后台播放处理。
-- `scripts/ytm-request.js`：新版 `initplayback` 与密钥同步处理。
+- `scripts/ytm-response-v2.2.js`：响应去广告与后台播放处理。
 
 响应处理逻辑基于 Maasea/sgmodule（Apache-2.0），外层适配与功能收敛针对 Egern 完成。
