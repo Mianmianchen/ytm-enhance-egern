@@ -1,0 +1,7 @@
+Upstream project: Maasea/sgmodule
+Source: https://github.com/Maasea/sgmodule
+License: Apache License 2.0
+
+The bundled protobuf transformation code in scripts/ytm-response.js and
+scripts/ytm-request.js is derived from the upstream project. The Egern ctx
+wrappers, module configuration, and scope changes were added for this package.

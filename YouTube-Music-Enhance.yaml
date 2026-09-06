@@ -1,0 +1,44 @@
+name: YouTube Music Enhance - Native UI Stable v2
+description: 仅去除播放广告并启用后台播放；保留登录状态、原生歌词、评论、搜索、歌单、画中画及锁屏媒体信息
+author: Egern adaptation / Maasea upstream transformer
+icon: music.note
+
+scriptings:
+  # 本机修改 player/get_watch 响应，不再把账号请求 307 转发到第三方域名。
+  # config/log_event 只提取新版 initplayback 所需密钥，响应内容保持原样。
+  - http_response:
+      name: YTM 播放响应净化
+      match: '^https:\/\/youtubei(?:-att)?\.googleapis\.com\/youtubei\/v1\/(?:player|get_watch|config|log_event)(?:\?.*)?$'
+      script_url: './scripts/ytm-response.js'
+      body_required: true
+      binary_body: true
+      max_size: 8388608
+      timeout: 30
+
+  # 让 log_event 返回当前 Onesie 配置；请求正文会原样保留。
+  - http_request:
+      name: YTM 播放密钥同步
+      match: '^https:\/\/youtubei(?:-att)?\.googleapis\.com\/youtubei\/v1\/log_event(?:\?.*)?$'
+      script_url: './scripts/ytm-request.js'
+      body_required: true
+      binary_body: true
+      max_size: 8388608
+      timeout: 30
+
+  # 仅在本机缓存密钥与本次请求密钥一致时处理新版 initplayback；
+  # URL 由脚本逐项编码，避免旧版规则把 &ack 等参数截断。
+  - http_request:
+      name: YTM initplayback 去广告
+      match: '^https:\/\/[A-Za-z0-9._-]+\.googlevideo\.com\/initplayback(?:\?.*)?$'
+      script_url: './scripts/ytm-request.js'
+      body_required: true
+      binary_body: true
+      max_size: 8388608
+      timeout: 30
+
+mitm:
+  hostnames:
+    includes:
+      - youtubei.googleapis.com
+      - youtubei-att.googleapis.com
+      - '*.googlevideo.com'
