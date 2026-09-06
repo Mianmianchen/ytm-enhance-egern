@@ -80,6 +80,13 @@ if (!completed) return { body: originalBody };
 const value = completedValue ?? {};
 if (value.response) {
   const response = value.response;
+  // A missing/stale Onesie key used to produce an empty local 200 response.
+  // Newer YouTube Music builds may not retry player in that case, so let the
+  // original initplayback request continue unchanged instead.
+  const responseBody = response.body;
+  const isEmptyFallback = Number(response.status ?? 200) === 200
+    && (responseBody == null || responseBody.byteLength === 0);
+  if (isEmptyFallback) return { body: originalBody };
   return ctx.respond({
     status: Number(response.status ?? 200),
     headers: response.headers ?? {},
