@@ -1,4 +1,4 @@
-# YouTube Music Enhance - Native UI Stable v2
+# YouTube Music Enhance - Native UI Stable v2.1
 
 适用于 Egern。功能范围固定为：去除播放广告、启用后台播放。不会改写首页、搜索、歌词、评论、歌单、账号设置、画中画或锁屏媒体信息。
 
@@ -10,7 +10,7 @@
 4. 确认 Egern 的 MITM CA 已安装并信任，然后重启 Egern 隧道。
 5. 强制结束 YouTube Music，再重新打开。原账号通常会直接恢复；若 App 此前已清掉会话，再登录一次。
 
-Egern 会根据 YAML 中的相对路径自动加载 `scripts/ytm-response.js` 和 `scripts/ytm-request.js`，无需分别导入 JS。
+YAML 使用完整的 GitHub Raw 地址加载 `scripts/ytm-response.js` 和 `scripts/ytm-request.js`，无需分别导入 JS。
 
 ## 本版修复
 
@@ -21,6 +21,8 @@ Egern 会根据 YAML 中的相对路径自动加载 `scripts/ytm-response.js` �
 - 不再强制注入画中画能力，避免黑屏、只有声音或小窗转圈。
 - 不拦截 `browse`、`next`、`search`、`guide`、`account/get_setting`，减少歌词、评论、搜索和歌单异常。
 - 修改响应正文时清理旧的 `Content-Length` 与 `Content-Encoding`，避免正文长度不一致。
+- 远程脚本改用绝对 Raw 地址，避免 Egern 将相对路径识别成本地文件。
+- `initplayback` 仅匹配带 `ack` 的请求；密钥缺失或过期时透传原请求，不再返回可能导致无限转圈的空响应。
 
 ## 已验证
 
